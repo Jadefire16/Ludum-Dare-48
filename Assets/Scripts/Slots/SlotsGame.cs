@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using TMPro;
 using UnityEngine;
 
 public class SlotsGame : MonoBehaviour
@@ -13,6 +14,8 @@ public class SlotsGame : MonoBehaviour
     //Create a slot class and processor similar to the minigame handler that deals with slots
     [SerializeField] int cost = 10;
     [SerializeField] List<GameObject> buttons = new List<GameObject>();
+
+    [SerializeField] TMP_InputField costField;
     // When the game starts create a new set of slots based on the current cost, the floor cost should reflect the amount
     // When Player Begins The Slot 
     [ShowInInspector] Dictionary<SlotType, Slot> slots = new Dictionary<SlotType, Slot>();
@@ -50,10 +53,17 @@ public class SlotsGame : MonoBehaviour
         initialized = true;
     }
 
+    public void UpdateSlotCosts()
+    {
+        foreach (var item in slots.Values)
+            item.Cost = cost;
+
+    }
+
     [ContextMenu("Spin")]
     public void Spin()
     {
-        if(spins > 25)
+        if (spins > 25)
         {
             spins = 0;
             UnityEngine.Random.InitState((int)Mathf.PI * UnityEngine.Random.Range(2, 10000) / 2);
@@ -88,6 +98,12 @@ public class SlotsGame : MonoBehaviour
     public IEnumerator Display()
     {
         yield return null;
+    }
+
+    public void UpdateCost()
+    {
+        cost = int.Parse(costField.text);
+        UpdateSlotCosts();
     }
 
 }

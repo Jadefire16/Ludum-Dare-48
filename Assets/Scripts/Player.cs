@@ -10,6 +10,8 @@ public class Player : MonoBehaviour
     public static event Action<int> UpdateEsperEvent;
     public static event Action<int> UpdateArmorEvent;
 
+    public static event Action PlayerIsDeadEvent;
+
 
 
     public void SubtractLife(int value)

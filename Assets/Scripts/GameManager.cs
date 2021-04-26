@@ -24,6 +24,7 @@ public class GameManager : MonoSingleton<GameManager>
     {
         base.Awake();
         EventManager.RequestGameStart += () => StartGame("Game");
+        Player.PlayerIsDeadEvent += () => LoadScene("Dead");
         if (Player == null)
             FindObjectOfType<Player>();
     }
@@ -31,6 +32,7 @@ public class GameManager : MonoSingleton<GameManager>
     private void OnDisable()
     {
         EventManager.RequestGameStart -= () => StartGame("Game");
+        Player.PlayerIsDeadEvent -= () => LoadScene("Dead");
     }
 
     public void StartGame(string scene)
