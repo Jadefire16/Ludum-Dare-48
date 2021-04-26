@@ -34,6 +34,11 @@ public class Player : MonoBehaviour
         UpdateHealthEvent?.Invoke(currentLife);
     }
 
+    public void AddEsper(int value) // Unity needs to get their shit together and add support for properties god damnitt
+    {
+        Esper += value;
+    }
+
     public int SetLife { set { currentLife = value; UpdateHealthEvent?.Invoke(currentLife); } } // use to ignore armor!
     public int Life { get => currentLife; }
     public int Esper { get => currentEsper; set { currentEsper = value; UpdateEsperEvent?.Invoke(currentEsper); } }
