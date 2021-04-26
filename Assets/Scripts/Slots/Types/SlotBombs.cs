@@ -15,7 +15,7 @@ public class SlotBombs : Slot
     public override bool Execute()
     {
         GameManager.Instance.Player.SubtractLife(1);
-        GameManager.Instance.Player.Esper = Mathf.RoundToInt(GameManager.Instance.Player.Esper * 0.25f);
+        GameManager.Instance.Player.Esper = Mathf.RoundToInt(GameManager.Instance.Player.Esper * 0.75f);
         return false;
     }
 }

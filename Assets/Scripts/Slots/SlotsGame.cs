@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class SlotsGame : MonoBehaviour
 {
-    public static event Action<SlotType, string> SlotPlayedEvent;
+    public static event Action<SlotType, bool, string> SlotPlayedEvent;
     //int difficulty = 1; maybe have some difficulty later
     //Create a slot class and processor similar to the minigame handler that deals with slots
     [SerializeField] int cost = 10;
@@ -81,7 +81,7 @@ public class SlotsGame : MonoBehaviour
         }
         bool success = activeSlot.Execute(); // set some event to notify text when this updates or something
         Debug.Log(success ? activeSlot.SuccessMessage : activeSlot.FailMessage);
-        SlotPlayedEvent?.Invoke(activeSlot.Type, success ? activeSlot.SuccessMessage : activeSlot.FailMessage);
+        SlotPlayedEvent?.Invoke(activeSlot.Type, success, success ? activeSlot.SuccessMessage : activeSlot.FailMessage);
 
     }
 

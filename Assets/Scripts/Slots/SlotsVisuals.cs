@@ -5,27 +5,43 @@ using UnityEngine;
 
 public class SlotsVisuals : MonoBehaviour
 {
-    public GameObject particlePrefab;
     public Transform spawnPos;
+    [Header("Effects")]
+    public GameObject particlePrefab;
     public Animator lights, handle;
+    [Header("Visuals")]
+    public SpriteRenderer[] sprites = new SpriteRenderer[3];
+
+    bool randomizing;
+
 
     [SerializeField] List<SlotData> datas = new List<SlotData>();
 
     Dictionary<SlotType, SlotData> slotDatas = new Dictionary<SlotType, SlotData>();
-
-
     private void OnEnable()
     {
         SlotsGame.SlotPlayedEvent += SlotPlayed;
 
         for (int i = 0; i < datas.Count; i++)
             slotDatas.Add(datas[i].type, datas[i]);
-
     }
 
     private void OnDisable()
     {
         SlotsGame.SlotPlayedEvent -= SlotPlayed;
+    }
+
+    private void Update()
+    {
+        if (randomizing)
+        {
+            for (int i = 0; i < sprites.Length; i++)
+            {
+                sprites[i].sprite = datas[Random.Range(0, slotDatas.Count)].sprite;
+                if (sprites[i].sprite == null)
+                    sprites[i].sprite = datas[0].sprite;
+            }
+        }
     }
 
     public Sprite GetSprite(SlotType type) => slotDatas[type].sprite;
@@ -38,19 +54,27 @@ public class SlotsVisuals : MonoBehaviour
         Destroy(system.gameObject, 6f);
     }
 
-    private void SlotPlayed(SlotType type, string message)
+    private void SlotPlayed(SlotType type, bool success, string message)
     {
-        StartCoroutine(Animation(type, message));
+        StartCoroutine(Animation(type,success, message));
     }
 
-    public IEnumerator Animation(SlotType type, string message)
+    public IEnumerator Animation(SlotType type, bool success, string message)
     {
         handle.Play("Spin");
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(0.25f);
+        randomizing = true;
+        yield return new WaitForSeconds(2.75f);
+        randomizing = false;
         if (type != SlotType.None)
         {
             SpawnParticle(type);
-            lights.Play("Win");
+
+            if(success)
+                lights.Play("Win");
+
+            for (int i = 0; i < sprites.Length; i++)
+                sprites[i].sprite = slotDatas[type].sprite;
             yield return null;
         }
         else
@@ -58,5 +82,4 @@ public class SlotsVisuals : MonoBehaviour
 
 
     }
-
 }
