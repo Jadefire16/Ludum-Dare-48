@@ -5,7 +5,6 @@ using UnityEngine;
 public class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
 {
     private static T _instance = null;
-
     public static T Instance
     {
         get
@@ -20,17 +19,13 @@ public class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
             }
             return _instance;
         }
-        private set
-        {
-            _instance = value;
-        }
+        private set { _instance = value; }
     }
-
     protected virtual void Awake()
     {
-        if (_instance != null)
+        if (_instance != null) 
             Destroy(gameObject);
         else
-            DontDestroyOnLoad(gameObject);
+            DontDestroyOnLoad(gameObject);        
     }
 }

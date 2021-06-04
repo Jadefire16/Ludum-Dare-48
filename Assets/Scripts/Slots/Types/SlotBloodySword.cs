@@ -20,13 +20,11 @@ public class SlotBloodySword : Slot
         {
             GameManager.Instance.Player.AddLife(1);
             GameManager.Instance.Player.Esper -= cost;
-            Debug.Log("Not Fucked");
         }
         else
         {
             GameManager.Instance.Player.Esper += cost;
             GameManager.Instance.Player.SubtractLife(1);
-            Debug.Log("Fucked");
         }
         return success;
     }

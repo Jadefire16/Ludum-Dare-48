@@ -1,16 +1,24 @@
 ﻿using Sirenix.OdinInspector;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class SlotsVisuals : MonoBehaviour
 {
+    public static event Action WonSpinEvent;
+    public static event Action LostSpinEvent;
+
+
     public Transform spawnPos;
     [Header("Effects")]
     public GameObject particlePrefab;
     public Animator lights, handle;
     [Header("Visuals")]
     public SpriteRenderer[] sprites = new SpriteRenderer[3];
+
+    public TextMeshProUGUI displayText;
 
     bool randomizing;
 
@@ -37,7 +45,7 @@ public class SlotsVisuals : MonoBehaviour
         {
             for (int i = 0; i < sprites.Length; i++)
             {
-                sprites[i].sprite = datas[Random.Range(0, slotDatas.Count)].sprite;
+                sprites[i].sprite = datas[UnityEngine.Random.Range(0, slotDatas.Count)].sprite;
                 if (sprites[i].sprite == null)
                     sprites[i].sprite = datas[0].sprite;
             }
@@ -48,7 +56,6 @@ public class SlotsVisuals : MonoBehaviour
     
     public void SpawnParticle(SlotType type)
     {
-
         ParticleSystem system = Instantiate(particlePrefab, spawnPos.position, spawnPos.rotation).GetComponent<ParticleSystem>();
         system.textureSheetAnimation.SetSprite(0, GetSprite(type)); // always set the 0th index of the animation to the correct slot
         Destroy(system.gameObject, 6f);
@@ -70,15 +77,24 @@ public class SlotsVisuals : MonoBehaviour
         {
             SpawnParticle(type);
 
-            if(success)
+            if (success)
+            {
                 lights.Play("Win");
+                WonSpinEvent?.Invoke();
+            }
+            else
+                LostSpinEvent?.Invoke();
 
             for (int i = 0; i < sprites.Length; i++)
                 sprites[i].sprite = slotDatas[type].sprite;
+            displayText.text = message;
             yield return null;
         }
         else
+        {
+            displayText.text = message;
             yield return null;
+        }
 
 
     }

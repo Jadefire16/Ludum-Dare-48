@@ -12,11 +12,15 @@ public class Player : MonoBehaviour
 
     public static event Action PlayerIsDeadEvent;
 
-
+    bool dead = false;
 
     public void SubtractLife(int value)
     {
-        if(currentArmor < value)
+        if(currentArmor == 0)
+        {
+            currentLife -= value;
+        }
+        else if(currentArmor < value)
         {
             _ = currentArmor - value * -1;
             currentArmor = 0;
@@ -26,6 +30,7 @@ public class Player : MonoBehaviour
             currentArmor -= value;
         UpdateHealthEvent?.Invoke(currentLife);
         UpdateArmorEvent?.Invoke(currentArmor);
+        CheckLife();
     }
     public void AddLife(int value)
     {
@@ -39,26 +44,35 @@ public class Player : MonoBehaviour
         Esper += value;
     }
 
-    public int SetLife { set { currentLife = value; UpdateHealthEvent?.Invoke(currentLife); } } // use to ignore armor!
+    public int SetLife { set { currentLife = value; UpdateHealthEvent?.Invoke(currentLife); CheckLife(); } } // use to ignore armor!
     public int Life { get => currentLife; }
     public int Esper { get => currentEsper; set { currentEsper = value; UpdateEsperEvent?.Invoke(currentEsper); } }
     public int Armor { get => currentArmor; set { currentArmor = value; UpdateArmorEvent?.Invoke(currentArmor); } }
 
 
     [Header("Values")]
-    [SerializeField] int currentLife = 10;
+    [SerializeField] int currentLife = 3;
     [SerializeField] int currentEsper = 1000;
     [SerializeField] int currentArmor = 0;
 
-    int maxLife = 10;
+    int maxLife = 3;
 
-    private void Start()
+    private void Update()
     {
-        // Load previous Esper
+        CheckLife();
     }
 
-    private void OnDisable()
+    public void CheckLife()
     {
-        // Save Esper
+        if (!dead)
+        {
+            if (currentLife <= 0)
+            {
+                Debug.Log("Dead");
+                PlayerIsDeadEvent?.Invoke();
+                dead = true;
+            }
+        }
     }
+
 }

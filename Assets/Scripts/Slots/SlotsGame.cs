@@ -25,6 +25,8 @@ public class SlotsGame : MonoBehaviour
 
     Vector3 worldMousePos;
 
+    bool spinning = false;
+
     private void Start()
     {
         Initialize();
@@ -36,18 +38,18 @@ public class SlotsGame : MonoBehaviour
             return;
         slots.Clear();
 
-        var allSlots = Assembly.GetAssembly(typeof(Slot)).GetTypes().Where(t => typeof(Slot).IsAssignableFrom(t) && t.IsAbstract == false);
+        var allSlots = Assembly.GetAssembly(typeof(Slot)).GetTypes().Where(t => t.IsSubclassOf(typeof(Slot)) && t.IsAbstract == false);
         int previousRarityRange = 0;
         foreach (var slotType in allSlots)
         {
-            Debug.Log($"Current Previous Rarity Range {previousRarityRange}");
+           Debug.Log($"Current Previous Rarity Range {previousRarityRange}");
             Slot slot = Activator.CreateInstance(slotType) as Slot;
-            slot.Cost = cost;
-            slot.Range = new Vector2(previousRarityRange, previousRarityRange + slot.Rarity);
-            Debug.Log($"Slot Rarity Range {slot.Range} of {slot}");
-            previousRarityRange += slot.Rarity;
-            Debug.Log($"New Previous Rarity Range {previousRarityRange}");
-            maxRarityRange += slot.Rarity;
+           slot.Cost = cost;
+           slot.Range = new Vector2(previousRarityRange, previousRarityRange + slot.Rarity);
+           Debug.Log($"Slot Rarity Range {slot.Range} of {slot}");
+           previousRarityRange += slot.Rarity;
+           Debug.Log($"New Previous Rarity Range {previousRarityRange}");
+           maxRarityRange += slot.Rarity;
             slots.Add(slot.Type, slot);
         }
         initialized = true;
@@ -63,6 +65,9 @@ public class SlotsGame : MonoBehaviour
     [ContextMenu("Spin")]
     public void Spin()
     {
+        if (spinning)
+            return;
+        spinning = true;
         if (spins > 25)
         {
             spins = 0;
@@ -92,12 +97,13 @@ public class SlotsGame : MonoBehaviour
         bool success = activeSlot.Execute(); // set some event to notify text when this updates or something
         Debug.Log(success ? activeSlot.SuccessMessage : activeSlot.FailMessage);
         SlotPlayedEvent?.Invoke(activeSlot.Type, success, success ? activeSlot.SuccessMessage : activeSlot.FailMessage);
-
+        StartCoroutine(Wait(3f));
     }
 
-    public IEnumerator Display()
+    public IEnumerator Wait(float time)
     {
-        yield return null;
+        yield return new WaitForSeconds(time);
+        spinning = false;
     }
 
     public void UpdateCost()

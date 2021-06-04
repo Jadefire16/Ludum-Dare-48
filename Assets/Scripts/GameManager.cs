@@ -24,7 +24,7 @@ public class GameManager : MonoSingleton<GameManager>
     {
         base.Awake();
         EventManager.RequestGameStart += () => StartGame("Game");
-        Player.PlayerIsDeadEvent += () => LoadScene("Dead");
+        Player.PlayerIsDeadEvent += () => StartCoroutine(LoadScene("GameOver"));
         if (Player == null)
             FindObjectOfType<Player>();
     }
@@ -32,7 +32,7 @@ public class GameManager : MonoSingleton<GameManager>
     private void OnDisable()
     {
         EventManager.RequestGameStart -= () => StartGame("Game");
-        Player.PlayerIsDeadEvent -= () => LoadScene("Dead");
+        Player.PlayerIsDeadEvent -= () => StartCoroutine(LoadScene("GameOver"));
     }
 
     public void StartGame(string scene)
@@ -68,7 +68,7 @@ public class GameManager : MonoSingleton<GameManager>
     public IEnumerator UnloadScene(string scene)
     {
         //SceneManager.SetActiveScene(mainScene);
-        var progress = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Additive);
+        var progress = SceneManager.UnloadSceneAsync(scene);
 
         while (!progress.isDone)
             yield return null;
